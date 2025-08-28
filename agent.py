@@ -7,7 +7,7 @@ from livekit.plugins import (
 )
 from livekit.plugins import google
 from prompts import AGENT_INSTRUCTION, SESSION_INSTRUCTION
-from tools import get_weather, search_web, send_email
+from tools import get_weather, search_web, send_email, create_monday_task, create_crm_task
 load_dotenv()
 
 
@@ -16,27 +16,41 @@ class Assistant(Agent):
         super().__init__(
             instructions=AGENT_INSTRUCTION,
             llm=google.beta.realtime.RealtimeModel(
-            voice="Aoede",
-            temperature=0.8,
-        ),
+                voice="Aoede",
+                temperature=0.8,
+                _gemini_tools=[
+                    get_weather,
+                    search_web,
+                    send_email,
+                    create_monday_task,
+                    create_crm_task
+                ],
+            ),
             tools=[
                 get_weather,
                 search_web,
-                send_email
+                send_email,
+                create_monday_task,
+                create_crm_task
             ],
-
         )
         
 
 
 async def entrypoint(ctx: agents.JobContext):
+    await ctx.connect()
+    
+    # Create the assistant instance
+    assistant = Assistant()
+    
+    # Create session with the LLM from the assistant
     session = AgentSession(
-        
+        llm=assistant.llm,
     )
 
     await session.start(
+        agent=assistant,
         room=ctx.room,
-        agent=Assistant(),
         room_input_options=RoomInputOptions(
             # LiveKit Cloud enhanced noise cancellation
             # - If self-hosting, omit this parameter
@@ -45,8 +59,6 @@ async def entrypoint(ctx: agents.JobContext):
             noise_cancellation=noise_cancellation.BVC(),
         ),
     )
-
-    await ctx.connect()
 
     await session.generate_reply(
         instructions=SESSION_INSTRUCTION,
