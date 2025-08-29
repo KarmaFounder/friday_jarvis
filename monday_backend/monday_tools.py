@@ -7,20 +7,19 @@ from .monday_integration import MondayClient
 async def create_monday_task(
     context: RunContext,  # type: ignore
     task_name: str,
-    board_id: str,
     group_id: Optional[str] = None
 ) -> str:
     """
-    Create a new task in Monday.com board.
+    Create a new task in the locked Monday.com board.
+    The board is automatically enforced from environment configuration.
     
     Args:
         task_name: The name/title of the task to create
-        board_id: The ID of the Monday.com board to add the task to
-        group_id: Optional group/section ID within the board
+        group_id: Optional group/section ID within the board (e.g., 'group_mkt6pepv')
     """
     try:
         client = MondayClient()
-        result = client.create_task(board_id, task_name, group_id)
+        result = client.create_task(task_name, group_id)
         
         if result:
             task_id = result.get('id')
@@ -152,7 +151,7 @@ async def create_crm_task(
         board_id = "2116067359"  # September Content Board
         group_id = "group_mkt6pepv"  # TikToks group
         
-        result = client.create_task(board_id, task_name, group_id)
+        result = client.create_task(task_name, group_id)
         
         if result:
             task_id = result.get('id')
@@ -178,7 +177,7 @@ async def list_crm_tasks(
         client = MondayClient()
         board_id = "2116067359"  # September Content Board
         
-        tasks = client.search_tasks(board_id, "")  # Get all tasks
+        tasks = client.search_tasks("")  # Get all tasks
         
         if not tasks:
             return "The Paid Media CRM board appears to be empty, Sir."

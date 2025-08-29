@@ -7,7 +7,11 @@ from livekit.plugins import (
 )
 from livekit.plugins import google
 from prompts import AGENT_INSTRUCTION, SESSION_INSTRUCTION
-from tools import get_weather, search_web, send_email, create_monday_task, create_crm_task
+from tools import get_weather, search_web, send_email, create_monday_task, create_crm_task, list_monday_boards
+import logging
+
+# Enable debug logging for agents
+logging.basicConfig(level=logging.DEBUG)
 load_dotenv()
 
 
@@ -18,20 +22,14 @@ class Assistant(Agent):
             llm=google.beta.realtime.RealtimeModel(
                 voice="Aoede",
                 temperature=0.8,
-                _gemini_tools=[
-                    get_weather,
-                    search_web,
-                    send_email,
-                    create_monday_task,
-                    create_crm_task
-                ],
             ),
             tools=[
                 get_weather,
                 search_web,
                 send_email,
                 create_monday_task,
-                create_crm_task
+                create_crm_task,
+                list_monday_boards
             ],
         )
         
@@ -60,6 +58,7 @@ async def entrypoint(ctx: agents.JobContext):
         ),
     )
 
+    # Generate initial greeting and start listening
     await session.generate_reply(
         instructions=SESSION_INSTRUCTION,
     )

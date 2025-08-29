@@ -14,6 +14,11 @@ class MondayClient:
             "Content-Type": "application/json",
             "API-Version": "2023-10"
         }
+        
+        # Enforce the specific board ID from environment
+        self.enforced_board_id = os.getenv("MONDAY_BOARD_ID")
+        if not self.enforced_board_id:
+            raise ValueError("MONDAY_BOARD_ID environment variable is required but not set")
 
     def _make_request(self, query: str, variables: Optional[Dict] = None) -> Dict[Any, Any]:
         """Make a GraphQL request to Monday.com API"""
@@ -75,8 +80,11 @@ class MondayClient:
         boards = result.get("data", {}).get("boards", [])
         return boards[0].get("groups", []) if boards else []
 
-    def create_task(self, board_id: str, task_name: str, group_id: Optional[str] = None) -> Dict[Any, Any]:
-        """Create a new task/item in a Monday.com board"""
+    def create_task(self, task_name: str, group_id: Optional[str] = None) -> Dict[Any, Any]:
+        """
+        Create a new task/item in the enforced Monday.com board.
+        Board ID is automatically enforced from environment variable.
+        """
         query = """
         mutation ($board_id: ID!, $item_name: String!, $group_id: String) {
             create_item (
@@ -92,22 +100,23 @@ class MondayClient:
         }
         """
         
+        # Always use the enforced board ID from environment
         variables = {
-            "board_id": str(board_id),
+            "board_id": str(self.enforced_board_id),
             "item_name": task_name
         }
         
         if group_id:
             variables["group_id"] = group_id
         
-        print(f"🔍 Creating task with variables: {variables}")
-        print(f"🔍 Using API key: {self.api_key[:10]}..." if self.api_key else "🔍 No API key found!")
+        print(f"🔒 Creating task in enforced board {self.enforced_board_id}")
+        print(f"🔍 Task: '{task_name}' in group: {group_id or 'default'}")
         
         try:
             result = self._make_request(query, variables)
             print(f"🔍 Monday.com API response: {result}")
             created_item = result.get("data", {}).get("create_item", {})
-            print(f"🔍 Created item: {created_item}")
+            print(f"✅ Created item: {created_item}")
             return created_item
         except Exception as e:
             print(f"❌ Error in create_task: {e}")
@@ -160,8 +169,11 @@ class MondayClient:
         result = self._make_request(query, variables)
         return result.get("data", {}).get("create_update", {})
 
-    def search_tasks(self, board_id: str, search_term: str) -> list:
-        """Search for tasks in a board"""
+    def search_tasks(self, search_term: str = "") -> list:
+        """
+        Search for tasks in the enforced Monday.com board.
+        Board ID is automatically enforced from environment variable.
+        """
         query = """
         query ($board_id: [Int!]) {
             boards(ids: $board_id) {
@@ -171,12 +183,21 @@ class MondayClient:
                     created_at
                     url
                     state
+                    creator {
+                        name
+                    }
+                    group {
+                        title
+                    }
                 }
             }
         }
         """
         
-        variables = {"board_id": [int(board_id)]}
+        # Always use the enforced board ID from environment
+        variables = {"board_id": [int(self.enforced_board_id)]}
+        print(f"🔒 Searching tasks in enforced board {self.enforced_board_id}")
+        
         result = self._make_request(query, variables)
         boards = result.get("data", {}).get("boards", [])
         
@@ -184,8 +205,12 @@ class MondayClient:
             return []
         
         items = boards[0].get("items", [])
-        # Filter items that contain the search term
-        return [item for item in items if search_term.lower() in item.get("name", "").lower()]
+        
+        # Filter items that contain the search term if provided
+        if search_term:
+            return [item for item in items if search_term.lower() in item.get("name", "").lower()]
+        else:
+            return items
 
 def test_monday_connection():
     """Test Monday.com API connection"""
