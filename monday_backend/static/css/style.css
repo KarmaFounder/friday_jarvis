@@ -1,0 +1,547 @@
+/* Friday AI Assistant - Modern UI with White Background */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #ffffff;
+    color: #000000;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: #ffffff;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    border-bottom: 1px solid #e5e5e5;
+    background: #ffffff;
+    z-index: 100;
+}
+
+.logo h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #000000;
+    letter-spacing: -0.5px;
+}
+
+.logo .subtitle {
+    font-size: 14px;
+    color: #666666;
+    font-weight: 400;
+    margin-left: 8px;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: pulse 2s infinite;
+}
+
+.status-dot.listening {
+    background: #3b82f6;
+}
+
+.status-dot.thinking {
+    background: #f59e0b;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    position: relative;
+}
+
+/* Sound Wave Visualization */
+.sound-wave-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sound-wave-container.active {
+    opacity: 1;
+}
+
+.sound-wave {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 80px;
+}
+
+.wave-bar {
+    width: 4px;
+    height: 20px;
+    background: #000000;
+    border-radius: 2px;
+    animation: wave 1.5s ease-in-out infinite;
+    transform-origin: center;
+}
+
+@keyframes wave {
+    0%, 100% {
+        height: 20px;
+        opacity: 0.3;
+    }
+    50% {
+        height: 60px;
+        opacity: 1;
+    }
+}
+
+.sound-wave-container.speaking .wave-bar {
+    background: #3b82f6;
+}
+
+.sound-wave-container.listening .wave-bar {
+    background: #ef4444;
+}
+
+/* Chat Container */
+.chat-container {
+    flex: 1;
+    padding: 20px 30px;
+    overflow-y: auto;
+    background: #ffffff;
+}
+
+.message-list {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.message {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.message-content {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.message.user .message-content {
+    flex-direction: row-reverse;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.assistant-avatar {
+    background: #000000;
+    color: #ffffff;
+}
+
+.user-avatar {
+    background: #f3f4f6;
+    color: #000000;
+    border: 2px solid #e5e7eb;
+}
+
+.text {
+    background: #f8f9fa;
+    padding: 16px 20px;
+    border-radius: 18px;
+    max-width: 70%;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #000000;
+    border: 1px solid #e5e7eb;
+}
+
+.message.user .text {
+    background: #000000;
+    color: #ffffff;
+    border: 1px solid #000000;
+}
+
+.message.assistant .text {
+    background: #f8f9fa;
+    color: #000000;
+}
+
+.timestamp {
+    font-size: 12px;
+    color: #6b7280;
+    margin-left: 52px;
+}
+
+.message.user .timestamp {
+    margin-left: 0;
+    margin-right: 52px;
+    text-align: right;
+}
+
+/* Input Container */
+.input-container {
+    padding: 20px 30px;
+    border-top: 1px solid #e5e7eb;
+    background: #ffffff;
+}
+
+.input-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f8f9fa;
+    border: 2px solid #e5e7eb;
+    border-radius: 25px;
+    padding: 8px;
+    transition: border-color 0.2s ease;
+}
+
+.input-wrapper:focus-within {
+    border-color: #000000;
+}
+
+.voice-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #000000;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.voice-button:hover {
+    background: #374151;
+}
+
+.voice-button.recording {
+    background: #ef4444;
+    animation: pulse-red 1s infinite;
+}
+
+@keyframes pulse-red {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+#messageInput {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 12px 16px;
+    font-size: 15px;
+    color: #000000;
+    outline: none;
+    font-family: inherit;
+}
+
+#messageInput::placeholder {
+    color: #9ca3af;
+}
+
+.send-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #000000;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.send-button:hover {
+    background: #374151;
+}
+
+.send-button:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+}
+
+/* Quick Actions */
+.quick-actions {
+    max-width: 800px;
+    margin: 16px auto 0;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.quick-action {
+    padding: 8px 16px;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    color: #374151;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.quick-action:hover {
+    background: #000000;
+    color: #ffffff;
+    border-color: #000000;
+}
+
+/* Side Panel (Monday.com) */
+.side-panel {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 400px;
+    height: 100vh;
+    background: #ffffff;
+    border-left: 1px solid #e5e7eb;
+    z-index: 200;
+    transition: right 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.side-panel.open {
+    right: 0;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.panel-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #000000;
+}
+
+.close-panel {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 4px;
+}
+
+.panel-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.quick-task-creator h4 {
+    margin-bottom: 16px;
+    color: #000000;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.quick-task-creator input,
+.quick-task-creator select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #000000;
+    background: #ffffff;
+}
+
+.create-task-btn {
+    width: 100%;
+    padding: 12px;
+    background: #000000;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.create-task-btn:hover {
+    background: #374151;
+}
+
+/* Monday.com Toggle Button */
+.monday-toggle {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #000000;
+    color: #ffffff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+    z-index: 150;
+}
+
+.monday-toggle:hover {
+    background: #374151;
+    transform: scale(1.05);
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.loading-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #e5e7eb;
+    border-top: 3px solid #000000;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-overlay p {
+    color: #374151;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header {
+        padding: 16px 20px;
+    }
+    
+    .logo h1 {
+        font-size: 24px;
+    }
+    
+    .chat-container {
+        padding: 16px 20px;
+    }
+    
+    .input-container {
+        padding: 16px 20px;
+    }
+    
+    .text {
+        max-width: 85%;
+    }
+    
+    .side-panel {
+        width: 100%;
+        right: -100%;
+    }
+    
+    .monday-toggle {
+        bottom: 20px;
+        right: 20px;
+        width: 48px;
+        height: 48px;
+    }
+}
+
+/* Scrollbar Styling */
+.chat-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.chat-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.chat-container::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+}

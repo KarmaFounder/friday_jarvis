@@ -1,0 +1,98 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background: #ffffff;
+  color: #000000;
+}
+
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 30px;
+  z-index: 100;
+}
+
+.app-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #000000;
+  letter-spacing: -0.8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.sound-wave-container {
+  margin-bottom: 40px;
+}
+
+.status-text {
+  font-size: 18px;
+  font-weight: 500;
+  color: #374151;
+  text-align: center;
+  max-width: 600px;
+  line-height: 1.5;
+  transition: color 0.3s ease;
+}
+
+.status-text.listening {
+  color: #ef4444;
+}
+
+.status-text.speaking {
+  color: #3b82f6;
+}
+
+.status-text.thinking {
+  color: #f59e0b;
+}
+
+.app-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 30px;
+  text-align: center;
+}
+
+.app-footer p {
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 20px;
+  }
+  
+  .app-title {
+    font-size: 28px;
+  }
+  
+  .app-main {
+    padding: 16px;
+  }
+  
+  .status-text {
+    font-size: 16px;
+    padding: 0 20px;
+  }
+  
+  .app-footer {
+    padding: 20px;
+  }
+}
